@@ -26,10 +26,10 @@ docs/     What the engine does and how it was worked out
 Python 3.10 or newer.
 
 ```bash
-git clone https://github.com/DmitryMilk/we_are_vocoders   # the original data
 git clone <this repository> we-are-vocoders-engine
 cd we-are-vocoders-engine
 pip install -r requirements.txt
+./scripts/fetch-original.sh            # clones the author's repo next door
 
 cd tools
 python3 vocoders.py info                    # engine and song summary
@@ -44,19 +44,31 @@ else, pass `--repo /wherever/it/is`.
 
 ### The web app
 
-`web/` is a static site with no build step, but it needs the song data, which is
-**not** in this repository (see *Licensing* below):
+`web/` is a static site with no build step and **no song data of its own**. On
+first visit it fetches the original `.asm` and `.dat` sources from the author's
+GitHub, assembles and interprets them in the browser — the same thing the Python
+tool does — and keeps the result in that browser's local storage. About 3.5
+seconds once, then nothing.
 
 ```bash
-cd tools
-python3 vocoders.py webdata --out ../web/data/song.json
-cd ../web
+cd web
 python3 -m http.server 8080        # then open http://localhost:8080
 ```
 
-Opening `index.html` as a local file will not work: `song.json` and the worklet
-are loaded with `fetch()` and need an HTTP origin. To deploy, drag `web/` onto
+Opening `index.html` as a local file will not work: the data and the worklet are
+loaded with `fetch()` and need an HTTP origin. To deploy, drag `web/` onto
 https://app.netlify.com/drop, or `netlify deploy --prod --dir web`.
+
+If you would rather not depend on GitHub at runtime, build a local copy and the
+page will use it instead:
+
+```bash
+cd tools && python3 vocoders.py webdata --out ../web/data/song.json
+```
+
+and set `USE_LOCAL_DATA = true` at the top of `web/app.js`. That file is a
+derivative of the author's work, so think before committing or deploying it —
+see *Licensing*.
 
 ---
 
@@ -134,6 +146,11 @@ spectra for pitch. On the reference used here they gave **423.10** and
   sample. Band-limited modes correlate 0.999 (antialias) and 0.94 (remaster);
   the difference is that the browser uses mipmapped tables instead of
   recomputing the exact band limit per note.
+- **Browser builder against Python.** `web/builder.js` is a port of the
+  assembler and the note-stream interpreter. Building the song in the browser
+  and comparing every field with the Python exporter gives a **byte-identical**
+  result: wavetables, samples, all 8,880 ticks of state, row starts, sections
+  and metadata.
 - **Note grid.** 99% of the 74 distinct frequencies in the song fall within
   0.12 semitones of one consistent equal-tempered grid (mean residual 0.046
   semitones). A one-byte misread in the note stream would have scattered them.
@@ -148,15 +165,19 @@ The code in `tools/` and `web/` is original work, released under the MIT licence
 
 **The music is not.** The wavetables, drum samples, note data and the original
 engine belong to Dmitry Milk, and his repository carries **no licence file**,
-which under default copyright means all rights reserved. So:
+which under default copyright means all rights reserved. This project is built so
+that it never redistributes any of it:
 
-- `web/data/song.json` — which contains his wavetables, his samples and his note
-  data in re-encoded form — is **not** included here and is listed in
-  `.gitignore`. Generate it yourself with `vocoders.py webdata`.
-- The same goes for any rendered audio. Nothing in `out/` is committed.
+- the tools read *your* clone of his repository;
+- the web app fetches his sources **in the visitor's browser** and builds the
+  data there, so a deployment of this project never holds or serves his work —
+  the only copy a visitor gets comes from his own published repository;
+- `web/data/song.json` and any rendered audio *are* derivatives of his work.
+  They are optional, nothing needs them, and `.gitignore` keeps them out.
 
-If you want to publish a deployed copy of the web app, or distribute the
-renders, ask him first. See `NOTICE.md`.
+That is linking rather than republishing, which is a meaningfully different act —
+but it is not a licence and not legal advice, it leans on his repository staying
+where it is, and telling him is cheap. `NOTICE.md` has the details.
 
 ---
 

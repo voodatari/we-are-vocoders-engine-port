@@ -152,7 +152,12 @@ footer b{color:var(--ink)}
 footer a{color:var(--cyan)}
 
 .boot{position:fixed; inset:0; display:grid; place-items:center; background:#0b0d12;
-  color:var(--amber); font-size:12px; letter-spacing:.2em; z-index:50}
+  color:var(--amber); font-size:12px; letter-spacing:.2em; z-index:50; text-align:center}
+.boot p{margin:0 0 10px}
+.bootbar{width:min(320px,70vw); height:6px; background:#151821; border:1px solid #000; margin:0 auto}
+.bootbar i{display:block; height:100%; width:0; background:var(--amber); transition:width .2s}
+.bootnote{margin-top:14px !important; color:var(--ink-dim); font-size:9.5px; letter-spacing:.04em;
+  max-width:44ch; line-height:1.6}
 .boot.gone{display:none}
 
 /* ------------------------------------------------------------ responsive -- */

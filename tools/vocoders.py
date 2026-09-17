@@ -119,6 +119,11 @@ def cmd_webdata(args) -> None:
     print(f'{args.out}: {m["ticks"]} ticks, {m["rows"]} rows, '
           f'{len(d["inst"])} instruments (wavetables and samples included), '
           f'{Path(args.out).stat().st_size/1024:.0f} KB')
+    print('\nThe web app does NOT need this file: it builds the same data in the\n'
+          'browser from the original sources. To use this copy instead, set\n'
+          'USE_LOCAL_DATA = true at the top of web/app.js.\n'
+          'It is a derivative of the original work - see NOTICE.md before\n'
+          'committing or deploying it.', file=sys.stderr)
 
 
 def cmd_calibrate(args) -> None:

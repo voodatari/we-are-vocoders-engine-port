@@ -12,26 +12,40 @@ Original repository: https://github.com/DmitryMilk/we_are_vocoders
 | The intro, its engine, wavetables, drum samples and note data | Dmitry Milk | **No** |
 | Assembler, interpreter, renderers, calibration, web app | this project (MIT) | Yes |
 
-## Why the song data is not committed
+## How this project avoids redistributing it
 
 At the time of writing, the original repository carries **no licence file**.
 Under default copyright law that means all rights are reserved: the author has
 not granted permission to redistribute his work.
 
-`web/data/song.json` is generated from that repository and contains, in
-re-encoded form:
+So nothing of his is copied here, and nothing of his is served from a deployment
+of this project:
 
-- the 57 wavetables (256 bytes each),
-- the two drum samples (1,280 bytes each),
-- the engine's state on all 8,880 ticks, which is the song itself.
+- **The tools** read his repository from wherever you cloned it. Run
+  `scripts/fetch-original.sh` and it is fetched from his GitHub, straight to your
+  machine.
+- **The web app** fetches the original `.asm` and `.dat` sources from
+  `raw.githubusercontent.com` **in the visitor's browser**, assembles them there
+  and keeps the result in that browser's local storage. The server hosting this
+  project never holds or transmits his data; the only copy a visitor receives
+  comes from his own published repository. See `web/builder.js`.
+- **`web/data/song.json`**, if you build one, *is* a derivative of his work: it
+  contains the 57 wavetables, the two drum samples and the engine's state on all
+  8,880 ticks. It is optional, it is listed in `.gitignore`, and a deployment
+  works without it. The same goes for any rendered audio.
 
-It is therefore a derivative of his work, and it is listed in `.gitignore` so it
-never lands in a commit by accident. The same applies to any rendered audio.
+## What this does and does not settle
 
-## If you want to publish a deployed copy
+Fetching from his repository in the visitor's browser is the same kind of act as
+embedding or linking: you are pointing at what the author published rather than
+republishing it yourself. It is not a licence, and it is not legal advice. Two
+practical consequences worth knowing:
 
-Ask Dmitry Milk first — an issue on his repository is the obvious place. If he
-agrees, record the permission in this file and remove the `.gitignore` entry.
+- it uses his repository's bandwidth (about 65 requests on a visitor's first
+  visit, then nothing — the result is cached in their browser);
+- if he renames, moves or removes the repository, a deployment stops working.
+  `SRC` at the top of `web/builder.js` is where the path is configured.
 
-Running the tools locally on your own copy of his repository, for study or for
-listening, is a different matter and is what this project is for.
+Either way, telling him is cheap and he would probably like to know. An issue on
+his repository is the obvious place. If you would rather ship a pre-built
+`song.json`, ask him first and record the permission in this file.

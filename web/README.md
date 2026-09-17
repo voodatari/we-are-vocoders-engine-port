@@ -5,20 +5,31 @@ synthesises the music from the same data the Python renderer uses, which is what
 makes muting channels, switching synthesis mode and playing with the effects work
 while the music plays.
 
-About 300 KB in total, of which the song data is 239 KB (25 KB once gzipped by
-the host).
+About 60 KB of code, and no song data of its own.
 
-## Before it will run
+## Where the music comes from
 
-`data/song.json` is not in the repository (see `../NOTICE.md`). Generate it:
+There is no `song.json` in this repository, and a deployment does not need one.
+On first visit `builder.js` fetches the original `.asm` and `.dat` sources from
+`raw.githubusercontent.com`, assembles them into a 64 KB image, interprets the
+note stream and collects the engine's state on all 8,880 ticks — a port of
+`tools/engine.py`, verified to produce **byte-identical** output. It takes about
+3.5 seconds, once: the result is kept in the browser's local storage.
+
+The point is that this site never holds or serves the author's data. See
+`../NOTICE.md`.
+
+If you prefer not to depend on GitHub at runtime, build a local copy and the page
+will use it instead of fetching:
 
 ```bash
-cd ../tools
-python3 vocoders.py webdata --out ../web/data/song.json
+cd ../tools && python3 vocoders.py webdata --out ../web/data/song.json
 ```
 
-Then serve it over HTTP — opening `index.html` as a local file will not work,
-because `song.json` and the worklet are loaded with `fetch()`:
+and set `USE_LOCAL_DATA = true` at the top of `app.js`.
+
+Either way it must be served over HTTP — opening `index.html` as a local file
+will not work, because the data and the worklet are loaded with `fetch()`:
 
 ```bash
 python3 -m http.server 8080      # http://localhost:8080
@@ -48,8 +59,9 @@ Space plays and pauses; clicking the grid jumps to that row.
 | | |
 |---|---|
 | `index.html`, `style.css`, `app.js` | interface, tracker view and graphics |
+| `builder.js` | fetches the original sources and builds the song data in the browser |
 | `engine-worklet.js` | the engine: oscillators, 8-bit accumulator, PWM and resampling |
-| `data/song.json` | 8,880 ticks of engine state, 59 wavetables and the two samples |
+| `data/song.json` | optional pre-built copy of the above; absent by default |
 
 ## How the levels are handled
 

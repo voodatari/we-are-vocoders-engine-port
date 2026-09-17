@@ -39,10 +39,40 @@ const b64 = (s, T) => { const b = atob(s), a = new Uint8Array(b.length);
   return new T(a.buffer, 0, a.byteLength / T.BYTES_PER_ELEMENT); };
 
 /* ----------------------------------------------------------------- boot --- */
-fetch('data/song.json').then(r => r.json()).then(init).catch(err => {
-  $('#boot').innerHTML = '<div style="color:#ff5f6b;max-width:40ch;text-align:center">' +
-    'Could not load the song data. This page must be served over HTTP ' +
-    '(Netlify, or <code>python3 -m http.server</code>) — not opened as a local file.</div>';
+/* Set to true only if you built web/data/song.json and want the page to use it
+   instead of fetching the original sources. Left false so a default deployment
+   never even asks for a file that is not there. See ../NOTICE.md. */
+const USE_LOCAL_DATA = false;
+
+/* Three ways to get the song data, in order:
+     1. this browser's cache, from a previous visit;
+     2. a local data/song.json, if USE_LOCAL_DATA is on;
+     3. the author's own repository, assembled and interpreted here.
+   See builder.js for why option 3 exists. */
+const boot = (msg, frac) => {
+  const m = $('#bootmsg'), f = $('#bootfill');
+  if (m) m.textContent = msg;
+  if (f) f.style.width = Math.round((frac || 0) * 100) + '%';
+};
+
+(async () => {
+  const cached = SongBuilder.loadCached();
+  if (cached) { boot('reading cache…', 1); return init(cached); }
+  if (USE_LOCAL_DATA) {
+    try {
+      const r = await fetch('data/song.json');
+      if (r.ok) { boot('loading local data…', 1); return init(await r.json()); }
+    } catch (_) { /* fall through and build it */ }
+  }
+  const data = await SongBuilder.buildSong(boot);
+  SongBuilder.saveCached(data);
+  init(data);
+})().catch(err => {
+  $('#boot').innerHTML = '<div style="color:#ff5f6b;max-width:46ch;text-align:center;' +
+    'line-height:1.6">Could not build the song data.<br><br>' +
+    'This page must be served over HTTP (not opened as a local file), and it needs ' +
+    'access to <code>raw.githubusercontent.com</code> to read the original sources.' +
+    '<br><br><small>' + String(err && err.message || err) + '</small></div>';
   console.error(err);
 });
 

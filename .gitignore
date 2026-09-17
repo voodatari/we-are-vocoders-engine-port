@@ -1,4 +1,6 @@
-# Song data derived from the original repository — see NOTICE.md
+# Optional pre-built song data, derived from the original repository.
+# The web app does not need it: it builds the same thing in the browser.
+# See NOTICE.md before committing one.
 web/data/song.json
 
 # Rendered audio
