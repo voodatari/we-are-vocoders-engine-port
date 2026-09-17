@@ -1,0 +1,184 @@
+/* ---------------------------------------------------------------------------
+   Original tracker-style interface: hex pattern grid, bevelled panels and
+   raster bars. Fixed viewport height — the page itself never scrolls.
+   --------------------------------------------------------------------------- */
+:root{
+  --bg:#0b0d12; --panel:#1c2029; --panel2:#151821;
+  --bevel-hi:#3d4453; --bevel-lo:#0a0c11;
+  --ink:#c6ccd8; --ink-dim:#79808f; --ink-bright:#eef2f8;
+  --amber:#ffa22b; --cyan:#3ad8ea; --red:#ff5f6b;
+  --c1:#ffa22b; --c2:#3ad8ea; --c3:#8ea2ff; --c4:#7ee081; --c5:#ff8fd0; --c6:#ffe066;
+  --rowh:18px;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"DejaVu Sans Mono",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%; margin:0; overflow:hidden}
+body{
+  background:var(--bg); color:var(--ink);
+  font:13px/1.45 var(--mono); -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column;
+}
+
+/* -------------------------------------------------------------- header ---- */
+.topbar{position:relative; flex:0 0 auto; overflow:hidden; border-bottom:2px solid #000}
+#raster{display:block; width:100%; height:74px}
+.topbar .title{position:absolute; inset:0; display:flex; flex-direction:column;
+  justify-content:center; padding-inline:16px; pointer-events:none}
+.topbar h1{margin:0; font-size:clamp(17px,3.4vw,30px); letter-spacing:.16em; font-weight:700;
+  color:#fff; text-shadow:0 2px 0 #000,0 0 18px rgba(0,0,0,.85)}
+.topbar p{margin:2px 0 0; font-size:10.5px; letter-spacing:.05em; color:#e8edf6;
+  text-shadow:0 1px 3px #000,0 0 10px #000; max-width:70ch}
+
+/* --------------------------------------------------------------- frame ---- */
+main{flex:1 1 auto; min-height:0; display:grid;
+  grid-template-columns:288px minmax(0,1fr); gap:8px; padding:8px; align-items:stretch}
+.side{min-width:0; min-height:0; overflow-y:auto; overscroll-behavior:contain;
+  scrollbar-width:thin; scrollbar-color:#39404e transparent}
+.side::-webkit-scrollbar{width:7px}
+.side::-webkit-scrollbar-thumb{background:#39404e}
+.side::-webkit-scrollbar-track{background:transparent}
+
+.panel{background:var(--panel); border:1px solid #000;
+  box-shadow:inset 1px 1px 0 var(--bevel-hi), inset -1px -1px 0 var(--bevel-lo);
+  padding:7px 9px 9px}
+.panel + .panel{margin-top:7px}
+.panel h2{margin:0 0 6px; font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--amber); font-weight:700}
+.panel h2 small{color:var(--ink-dim); letter-spacing:.03em; text-transform:none; font-weight:400}
+
+/* ------------------------------------------------------------ controls ---- */
+.btn{font:inherit; color:var(--ink-bright); background:linear-gradient(#333a47,#242a35);
+  border:1px solid #000; box-shadow:inset 1px 1px 0 var(--bevel-hi),inset -1px -1px 0 var(--bevel-lo);
+  padding:4px 8px; cursor:pointer}
+.btn:hover{background:linear-gradient(#3d4553,#2b323e)}
+.btn:active,.btn[aria-pressed="true"]{background:linear-gradient(#171b22,#212732); color:var(--amber);
+  box-shadow:inset 1px 1px 0 var(--bevel-lo),inset -1px -1px 0 var(--bevel-hi)}
+.btn.big{font-size:14px; min-width:40px; line-height:1.1}
+.transport{display:flex; gap:5px; align-items:center}
+.clock{margin-left:auto; text-align:right; font-size:12px}
+.clock #time{color:var(--ink-bright); font-weight:700}
+.clock #dur{color:var(--ink-dim); margin-left:4px}
+
+.seek{position:relative; height:14px; margin:8px 0 6px; cursor:pointer;
+  background:var(--panel2); border:1px solid #000;
+  box-shadow:inset 1px 1px 0 var(--bevel-lo),inset -1px -1px 0 var(--bevel-hi)}
+.seekfill{position:absolute; inset:2px auto 2px 2px; width:0;
+  background:linear-gradient(var(--amber),#b96a10)}
+.seekhead{position:absolute; top:0; bottom:0; width:3px; left:0; background:#fff; opacity:.85}
+.rowinfo{display:flex; gap:10px; font-size:10.5px; color:var(--ink-dim); flex-wrap:wrap}
+.rowinfo b{color:var(--cyan); font-weight:700}
+
+.modes{display:grid; gap:4px}
+.mbtn{display:grid; grid-template-columns:auto minmax(0,1fr); gap:7px; align-items:baseline;
+  text-align:left; width:100%; padding:3px 8px 4px}
+.mbtn .mn{font-weight:700; letter-spacing:.03em; white-space:nowrap; font-size:11.5px}
+.mbtn .md{font-size:9px; color:var(--ink-dim); text-align:right;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mbtn[aria-pressed="true"] .md{color:#c08a3e}
+
+.chans{display:grid; grid-template-columns:1fr 1fr; gap:3px}
+.chan{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:5px; align-items:center;
+  padding:3px 6px; font-size:10.5px; letter-spacing:.04em}
+.chan .lbl{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.chan .lvl{width:30px; height:7px; background:#0a0c11; border:1px solid #000}
+.chan .lvl i{display:block; height:100%; width:0; background:currentColor}
+.chan[data-mute="1"]{opacity:.42}
+.chan[data-mute="1"] .lbl{text-decoration:line-through}
+
+.ctl{margin-bottom:6px}
+.ctl label{display:flex; justify-content:space-between; font-size:10px; color:var(--ink-dim);
+  letter-spacing:.04em; margin-bottom:2px}
+.ctl label b{color:var(--cyan); font-weight:700}
+input[type=range]{width:100%; height:16px; margin:0; accent-color:var(--amber);
+  background:transparent; cursor:pointer}
+.toggles{display:flex; gap:5px}
+.toggles .tog{flex:1; font-size:10px; letter-spacing:.08em; padding:4px 2px}
+.fxgrid{display:grid; grid-template-columns:1fr 1fr; gap:0 10px}
+#fxpanel.off{opacity:.45; pointer-events:none}
+
+.info dl{margin:0 0 6px; display:grid; grid-template-columns:auto 1fr; gap:1px 8px; font-size:10.5px}
+.info dt{color:var(--ink-dim)}
+.info dd{margin:0; text-align:right}
+.phonbar{flex:0 0 auto; display:grid; grid-template-columns:auto minmax(0,1fr);
+  align-items:center; gap:8px; border-top:1px solid #000; background:var(--panel2);
+  padding:3px 9px}
+.phonlbl{font-size:8.5px; letter-spacing:.18em; color:var(--amber)}
+.phon{font-size:13px; letter-spacing:.1em; color:var(--cyan);
+  white-space:nowrap; overflow:hidden}
+.phon b{color:#fff; background:#0f3f48; padding:0 3px}
+
+/* ------------------------------------------------------------- pattern ---- */
+.patternwrap{padding:0; overflow:hidden; min-width:0; min-height:0;
+  display:flex; flex-direction:column}
+.xscroll{flex:1 1 auto; min-height:0; overflow-x:auto; overflow-y:hidden;
+  display:flex; flex-direction:column}
+.chanhead,.patternview{min-width:660px}
+.chanhead{flex:0 0 auto; display:grid; grid-template-columns:44px repeat(6,minmax(0,1fr));
+  background:var(--panel2); border-bottom:1px solid #000; font-size:9.5px; letter-spacing:.1em}
+.chanhead div{padding:4px 6px; border-left:1px solid #000; color:var(--ink-dim)}
+.chanhead div:first-child{border-left:0}
+
+.patternview{position:relative; flex:1 1 auto; min-height:0; overflow:hidden; background:#0e1117}
+.playline{position:absolute; left:0; right:0; top:50%; height:var(--rowh); transform:translateY(-50%);
+  background:linear-gradient(90deg,rgba(255,162,43,.20),rgba(255,162,43,.05));
+  border-top:1px solid rgba(255,162,43,.55); border-bottom:1px solid rgba(255,162,43,.55);
+  pointer-events:none; z-index:3}
+.rows{position:absolute; left:0; right:0; top:50%; will-change:transform; z-index:2}
+.vu{position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none}
+.row{display:grid; grid-template-columns:44px repeat(6,minmax(0,1fr));
+  height:var(--rowh); line-height:var(--rowh); font-size:12px; white-space:nowrap}
+.row .n{color:#4b5261; text-align:right; padding-right:7px; background:#0b0e13}
+.row.beat .n{color:var(--amber)}
+.row.bar{background:rgba(255,255,255,.04)}
+.row.bar .n{color:#fff}
+.row .c{padding-left:6px; border-left:1px solid #14181f; overflow:hidden}
+.row .note{color:var(--ink-bright)}
+.row .fx{color:var(--red)}
+.row .dim{color:#333945}
+
+.scopes{flex:0 0 auto; display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
+  border-top:1px solid #000; background:var(--panel2)}
+.scopes figure{margin:0; padding:4px 6px 5px; border-left:1px solid #000; min-width:0}
+.scopes figure:first-child{border-left:0}
+.scopes canvas{display:block; width:100%; height:26px; background:#0a0c11; border:1px solid #000}
+.scopes figcaption{font-size:8.5px; letter-spacing:.07em; color:var(--ink-dim);
+  margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+/* -------------------------------------------------------------- footer ---- */
+footer{flex:0 0 auto; padding:5px 10px 7px; color:var(--ink-dim); font-size:10px;
+  border-top:1px solid #000; background:#0c0f15}
+footer p{margin:0; max-width:none}
+footer b{color:var(--ink)}
+footer a{color:var(--cyan)}
+
+.boot{position:fixed; inset:0; display:grid; place-items:center; background:#0b0d12;
+  color:var(--amber); font-size:12px; letter-spacing:.2em; z-index:50}
+.boot.gone{display:none}
+
+/* ------------------------------------------------------------ responsive -- */
+@media (max-width:900px){
+  main{grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(150px,42%) minmax(0,1fr)}
+  .side{order:2}
+  .patternwrap{order:1}
+}
+@media (max-width:560px){
+  :root{--rowh:17px}
+  #raster{height:58px}
+  .scopes{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .scopes figure:nth-child(4){border-left:0}
+  footer{font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){ .rows{transition:none!important} }
+
+/* Short viewports: tighten everything so the sidebar still fits without its
+   own scrollbar. */
+@media (max-height:820px){
+  .panel{padding:5px 8px 7px}
+  .panel + .panel{margin-top:5px}
+  .panel h2{margin-bottom:4px}
+  .mbtn{padding:2px 8px 3px}
+  .mbtn .mn{font-size:11px}
+  .seek{margin:6px 0 5px}
+  .ctl{margin-bottom:4px}
+  #raster{height:62px}
+}

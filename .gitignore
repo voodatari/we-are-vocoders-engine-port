@@ -1,0 +1,19 @@
+# Song data derived from the original repository — see NOTICE.md
+web/data/song.json
+
+# Rendered audio
+out/
+*.wav
+*.mp3
+*.flac
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/

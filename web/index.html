@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>We Are Vocoders — live beeper engine</title>
+<meta name="description" content="The ZX Spectrum beeper engine of We Are Vocoders, running live in the browser: five synthesis modes, per-channel mute and a tracker view of the score.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><rect width='16' height='16' fill='%230b0d12'/><rect x='2' y='6' width='2' height='4' fill='%23ffa22b'/><rect x='6' y='3' width='2' height='10' fill='%233ad8ea'/><rect x='10' y='5' width='2' height='6' fill='%23ffa22b'/></svg>">
+</head>
+<body>
+
+<header class="topbar">
+  <canvas id="raster" aria-hidden="true"></canvas>
+  <div class="title">
+    <h1>WE ARE VOCODERS</h1>
+    <p id="sub">Dmitry Milk · DiHalt 2026 — the 1-bit beeper engine, re-implemented and running live</p>
+  </div>
+</header>
+
+<main id="main">
+  <aside class="side" id="side">
+
+    <section class="panel">
+      <div class="transport">
+        <button id="play" class="btn big" aria-label="Play or pause">▶</button>
+        <button id="stop" class="btn big" aria-label="Stop">■</button>
+        <div class="clock"><span id="time">0:00</span><span id="dur">/ 0:00</span></div>
+      </div>
+      <div id="seek" class="seek" role="slider" tabindex="0" aria-label="Position"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="seekfill" class="seekfill"></div><div id="seekhead" class="seekhead"></div>
+      </div>
+      <div class="rowinfo">
+        <span>ROW <b id="rownum">000</b></span>
+        <span>TICK <b id="ticknum">0</b></span>
+        <span>PART <b id="secname">—</b></span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Synthesis mode</h2>
+      <div id="modes" class="modes"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Channels <small>click to mute · shift-click to solo</small></h2>
+      <div id="chans" class="chans"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Engine</h2>
+      <div class="ctl">
+        <label for="tps">Sample clock <b><span id="tpsv">423</span> T · <span id="srv">8274</span> Hz</b></label>
+        <input id="tps" type="range" min="330" max="520" value="423" step="1">
+      </div>
+      <div class="toggles">
+        <button id="clip" class="btn tog" aria-pressed="true">8-BIT CLIP</button>
+        <button id="alias" class="btn tog" aria-pressed="true">RING-MOD</button>
+      </div>
+    </section>
+
+    <section class="panel" id="fxpanel">
+      <h2>Production FX <small id="fxhint">— production mode</small></h2>
+      <div class="fxgrid"><div class="ctl"><label for="reverb">Reverb <b id="reverbv">16%</b></label>
+        <input id="reverb" type="range" min="0" max="100" value="16"></div>
+      <div class="ctl"><label for="width">Stereo width <b id="widthv">100%</b></label>
+        <input id="width" type="range" min="0" max="200" value="100"></div>
+      <div class="ctl"><label for="drive">Drive <b id="drivev">20%</b></label>
+        <input id="drive" type="range" min="0" max="100" value="20"></div>
+      <div class="ctl"><label for="tone">Tone <b id="tonev">+3 dB</b></label>
+        <input id="tone" type="range" min="-12" max="12" value="3"></div></div>
+    </section>
+
+  </aside>
+
+  <section class="patternwrap panel">
+    <div class="xscroll" id="xscroll">
+      <div class="chanhead" id="chanhead"></div>
+      <div class="patternview" id="patternview">
+        <div class="playline"></div>
+        <div class="rows" id="rows"></div>
+        <canvas class="vu" id="vu"></canvas>
+      </div>
+    </div>
+    <div class="phonbar"><span class="phonlbl">VOICE</span><div id="phon" class="phon"></div></div>
+    <div class="scopes" id="scopes"></div>
+  </section>
+</main>
+
+<footer>
+  <p><b>No audio files.</b> Every note you hear is synthesised in an AudioWorklet from the
+  engine's own data: the note stream is interpreted, five wavetable oscillators plus one PCM
+  channel are summed into an 8-bit accumulator at 8,274.23 Hz (423 T-states per sample at
+  3.5 MHz), and the score on the right comes from the same interpreter —
+  <a href="https://github.com/DmitryMilk/we_are_vocoders">original source</a>.</p>
+</footer>
+
+<div id="boot" class="boot"><div>Loading engine…</div></div>
+
+<script src="app.js"></script>
+</body>
+</html>
