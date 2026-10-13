@@ -53,8 +53,11 @@ python3 -m http.server 8080        # then open http://localhost:8080
 ```
 
 Opening `index.html` as a local file will not work: the data and the worklet are
-loaded with `fetch()` and need an HTTP origin. To deploy, drag `web/` onto
-https://app.netlify.com/drop, or `netlify deploy --prod --dir web`.
+loaded with `fetch()` and need an HTTP origin. The live version is served
+from GitHub Pages at https://voodatari.github.io/we-are-vocoders-engine/ (the
+workflow in `.github/workflows/pages.yml` publishes `web/` on every push to
+`main`). To deploy elsewhere, drag `web/` onto https://app.netlify.com/drop, or
+`netlify deploy --prod --dir web`.
 
 To regenerate the data after changing the engine:
 
