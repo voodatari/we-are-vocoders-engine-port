@@ -1,7 +1,7 @@
 #!/bin/sh
 # Clones (or updates) Dmitry Milk's repository next to this one, which is where
-# the tools read the song data from. Nothing of his is copied into this
-# repository — see NOTICE.md.
+# the Python tools read the song data from. His work is MIT-licensed; see
+# NOTICE.md for what came from where.
 set -e
 DEST="${1:-../we_are_vocoders}"
 URL="https://github.com/DmitryMilk/we_are_vocoders"

@@ -186,4 +186,8 @@ footer a{color:var(--cyan)}
   .seek{margin:6px 0 5px}
   .ctl{margin-bottom:4px}
   #raster{height:62px}
+  /* the raster is shorter here, so the title has to give the subtitle room
+     or the second line gets clipped by the topbar's overflow:hidden */
+  .topbar h1{font-size:clamp(15px,2.6vw,22px)}
+  .topbar p{font-size:10px; line-height:1.35}
 }

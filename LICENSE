@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 <YOUR NAME>
+Copyright (c) 2026 VooD
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-NOTE: this licence covers the code in this repository only. It does NOT cover
-the music, wavetables, drum samples or note data of "We Are Vocoders", which
-belong to Dmitry Milk. See NOTICE.md.
+NOTE: this licence covers the code in this repository only. The music,
+wavetables, drum samples and note data of "We Are Vocoders" are copyright
+(c) 2026 Dmitry_Milk and are used under his own MIT licence, reproduced in
+LICENSE-we_are_vocoders.txt. See NOTICE.md.

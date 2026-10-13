@@ -92,15 +92,18 @@
   <p><b>No audio files.</b> Every note you hear is synthesised in an AudioWorklet from the
   engine's own data: the note stream is interpreted, five wavetable oscillators plus one PCM
   channel are summed into an 8-bit accumulator at 8,274.23 Hz (423 T-states per sample at
-  3.5 MHz), and the score on the right comes from the same interpreter —
-  <a href="https://github.com/DmitryMilk/we_are_vocoders">original source</a>.</p>
+  3.5 MHz), and the score on the right comes from the same interpreter.</p>
+  <p>Music, wavetables and the original beeper engine by <b>Dmitry Milk</b>, used under the
+  MIT licence —
+  <a href="https://github.com/DmitryMilk/we_are_vocoders">original source</a>.
+  This reconstruction is MIT too.</p>
 </footer>
 
 <div id="boot" class="boot"><div>
   <p id="bootmsg">Loading engine…</p>
   <div class="bootbar"><i id="bootfill"></i></div>
-  <p class="bootnote">Song data is fetched from the author's own repository,
-  then kept in this browser. Nothing is stored on this site.</p>
+  <p class="bootnote">Reading the note stream and the wavetables, then building
+  the oscillators. No audio is downloaded — it is all synthesised here.</p>
 </div></div>
 
 <script src="builder.js"></script>

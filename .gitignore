@@ -1,9 +1,8 @@
-# Optional pre-built song data, derived from the original repository.
-# The web app does not need it: it builds the same thing in the browser.
-# See NOTICE.md before committing one.
-web/data/song.json
+# web/data/song.json IS committed: the web app loads it by default, and the
+# original work is MIT-licensed, so it can be. See NOTICE.md.
 
-# Rendered audio
+# Rendered audio (performances of the original composition - not committed,
+# but free to publish with credit; see NOTICE.md)
 out/
 *.wav
 *.mp3

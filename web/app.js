@@ -39,16 +39,19 @@ const b64 = (s, T) => { const b = atob(s), a = new Uint8Array(b.length);
   return new T(a.buffer, 0, a.byteLength / T.BYTES_PER_ELEMENT); };
 
 /* ----------------------------------------------------------------- boot --- */
-/* Set to true only if you built web/data/song.json and want the page to use it
-   instead of fetching the original sources. Left false so a default deployment
-   never even asks for a file that is not there. See ../NOTICE.md. */
-const USE_LOCAL_DATA = false;
+/* Where the song data comes from. True (the default) loads the committed
+   data/song.json, which is what a normal deployment wants: one request, no
+   dependency on anything outside this site. False makes builder.js fetch the
+   original .asm and .dat sources from the author's GitHub and assemble them
+   here instead — same bytes, about 3.5 s, and nothing of his is served from
+   this site. See ../NOTICE.md. */
+const USE_LOCAL_DATA = true;
 
 /* Three ways to get the song data, in order:
      1. this browser's cache, from a previous visit;
-     2. a local data/song.json, if USE_LOCAL_DATA is on;
+     2. the committed data/song.json, if USE_LOCAL_DATA is on;
      3. the author's own repository, assembled and interpreted here.
-   See builder.js for why option 3 exists. */
+   Option 3 is also the fallback if 2 is missing. See builder.js. */
 const boot = (msg, frac) => {
   const m = $('#bootmsg'), f = $('#bootfill');
   if (m) m.textContent = msg;
@@ -70,8 +73,9 @@ const boot = (msg, frac) => {
 })().catch(err => {
   $('#boot').innerHTML = '<div style="color:#ff5f6b;max-width:46ch;text-align:center;' +
     'line-height:1.6">Could not build the song data.<br><br>' +
-    'This page must be served over HTTP (not opened as a local file), and it needs ' +
-    'access to <code>raw.githubusercontent.com</code> to read the original sources.' +
+    'This page must be served over HTTP, not opened as a local file. It needs ' +
+    '<code>data/song.json</code>, or — with <code>USE_LOCAL_DATA = false</code> — ' +
+    'access to <code>raw.githubusercontent.com</code>.' +
     '<br><br><small>' + String(err && err.message || err) + '</small></div>';
   console.error(err);
 });

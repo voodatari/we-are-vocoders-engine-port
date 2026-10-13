@@ -44,11 +44,8 @@ else, pass `--repo /wherever/it/is`.
 
 ### The web app
 
-`web/` is a static site with no build step and **no song data of its own**. On
-first visit it fetches the original `.asm` and `.dat` sources from the author's
-GitHub, assembles and interprets them in the browser — the same thing the Python
-tool does — and keeps the result in that browser's local storage. About 3.5
-seconds once, then nothing.
+`web/` is a static site with no build step and no dependencies. The song data it
+needs is committed as `web/data/song.json` (239 KB), so it works out of the box:
 
 ```bash
 cd web
@@ -59,16 +56,19 @@ Opening `index.html` as a local file will not work: the data and the worklet are
 loaded with `fetch()` and need an HTTP origin. To deploy, drag `web/` onto
 https://app.netlify.com/drop, or `netlify deploy --prod --dir web`.
 
-If you would rather not depend on GitHub at runtime, build a local copy and the
-page will use it instead:
+To regenerate the data after changing the engine:
 
 ```bash
 cd tools && python3 vocoders.py webdata --out ../web/data/song.json
 ```
 
-and set `USE_LOCAL_DATA = true` at the top of `web/app.js`. That file is a
-derivative of the author's work, so think before committing or deploying it —
-see *Licensing*.
+There is a second way to get the data, kept because it is interesting: setting
+`USE_LOCAL_DATA = false` at the top of `web/app.js` makes `builder.js` fetch the
+original `.asm` and `.dat` sources from the author's GitHub and assemble them in
+the visitor's browser — a full port of the Python assembler and interpreter,
+verified byte-identical. It costs about 3.5 seconds on a first visit, then caches
+in local storage. The bundled file is the default because it is faster and does
+not depend on the original repository staying where it is.
 
 ---
 
@@ -160,24 +160,20 @@ spectra for pitch. On the reference used here they gave **423.10** and
 
 ## Licensing
 
-The code in `tools/` and `web/` is original work, released under the MIT licence
-(see `LICENSE`).
+Two copyrights, both MIT:
 
-**The music is not.** The wavetables, drum samples, note data and the original
-engine belong to Dmitry Milk, and his repository carries **no licence file**,
-which under default copyright means all rights reserved. This project is built so
-that it never redistributes any of it:
+| | |
+|---|---|
+| The code in `tools/` and `web/` | © 2026 VooD — `LICENSE` |
+| The intro, its engine, wavetables, drum samples and note data | © 2026 Dmitry_Milk — `LICENSE-we_are_vocoders.txt` |
 
-- the tools read *your* clone of his repository;
-- the web app fetches his sources **in the visitor's browser** and builds the
-  data there, so a deployment of this project never holds or serves his work —
-  the only copy a visitor gets comes from his own published repository;
-- `web/data/song.json` and any rendered audio *are* derivatives of his work.
-  They are optional, nothing needs them, and `.gitignore` keeps them out.
+The author licensed his repository under MIT and gave his blessing for this
+reconstruction to be published, which is why `web/data/song.json` — a derivative
+of his wavetables, samples and note data — can be committed here at all. His
+copyright notice and permission notice travel with it, as MIT requires.
 
-That is linking rather than republishing, which is a meaningfully different act —
-but it is not a licence and not legal advice, it leans on his repository staying
-where it is, and telling him is cheap. `NOTICE.md` has the details.
+If you fork this, ship both licence files and keep `NOTICE.md`, which says what
+came from where.
 
 ---
 
@@ -188,3 +184,5 @@ Music, wavetables and the original beeper engine: **Dmitry Milk** —
 Released at DiHalt 2026 Summer, where it placed second.
 
 This project only reads that repository and reproduces what the Z80 would do.
+Thanks to him for publishing the sources, for licensing them under MIT, and for
+being happy to see this exist — none of it would have been possible otherwise.

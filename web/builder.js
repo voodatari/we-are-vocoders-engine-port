@@ -2,18 +2,19 @@
    builder.js — Builds the song data in the visitor's browser, straight from the
    author's own repository.
 
-   WHY THIS EXISTS
-   ---------------
-   The wavetables, the drum samples and the note data belong to Dmitry Milk and
-   his repository carries no licence, so this project does not redistribute them.
-   Instead of shipping a pre-built song.json, the page fetches the original
-   sources from raw.githubusercontent.com and does here exactly what the Python
-   tool does offline: assemble the .asm data into a 64 KB image, interpret the
-   note stream, and collect the engine's state on every tick.
+   WHAT THIS IS
+   ------------
+   The alternative to the committed data/song.json. It fetches the original
+   sources from raw.githubusercontent.com and does in the browser exactly what
+   the Python tool does offline: assemble the .asm data into a 64 KB image,
+   interpret the note stream, and collect the engine's state on every tick. The
+   result is cached in the visitor's local storage.
 
-   Nothing of his is stored on this site's server. The only copy a visitor gets
-   comes from his own published repository, and it is cached in that visitor's
-   browser afterwards.
+   It is not the default — app.js ships with USE_LOCAL_DATA = true — but it is
+   kept for two reasons: a deployment using it holds none of the author's data
+   itself, and it is a live demonstration that the port is exact. Building here
+   and comparing every field with the Python exporter gives byte-identical
+   output.
 
    This is a port of tools/engine.py + tools/webexport.py. Keep them in step.
    --------------------------------------------------------------------------- */
